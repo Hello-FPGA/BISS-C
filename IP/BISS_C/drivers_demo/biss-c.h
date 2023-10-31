@@ -71,7 +71,7 @@ int BISS_C_ConfigPositionDatabits(int hdev, int bitsNum);
 /// enable the channels
 /// </summary>
 /// <param name="hdev">register configuration device handle</param>
-/// <param name="channelEnable">active low, bit active, 0x03 means channel 0 and channel 1 are enabled</param>
+/// <param name="channelEnable">active low, bit active, 0xfc means channel 0 and channel 1 are enabled</param>
 /// <returns>0: sucess;others: faild</returns>
 // ********************************************************************************
 int BISS_C_ConfigChannels(int hdev, int channelEnable);

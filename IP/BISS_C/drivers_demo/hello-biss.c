@@ -49,6 +49,7 @@
 #include "platform.h"
 #include "xil_printf.h"
 #include "biss-c.h"
+#include "sleep.h"
 
 
 int main()
@@ -75,21 +76,21 @@ int main()
 
     // the main clock is 50Mhz, we can set the ma as 1Mhz ,so the divider will be 50/2
     print("MAClk is 1Mhz\n\r");
-    status =  BISS_C_ConfigMAClk(hdev, 25);
+    status =  BISS_C_ConfigMAClk(hdev, 400);
     if(status)
     {
         print("BISS_C_ConfigMAClk failed\n\r");
     }
 
     //32bit
-    status =   BISS_C_ConfigPositionDatabits(hdev, 14);
+    status =   BISS_C_ConfigPositionDatabits(hdev, 24);
     if(status)
     {
         print("BISS_C_ConfigPositionDatabits failed\n\r");
     }
 
     //channel 0 enabled
-    status =    BISS_C_ConfigChannels(hdev,0x1);
+    status =    BISS_C_ConfigChannels(hdev,0xfe);
     if(status)
     {
         print("BISS_C_ConfigChannels failed\n\r");
@@ -98,13 +99,24 @@ int main()
 
     unsigned int singlePointData = 0;
     bool dataValid = false;
-    status =    BISS_C_ReadSinglePoint(hdev,0,&singlePointData,&dataValid);
-    if(status)
-    {
-        print("BISS_C_ConfigChannels failed\n\r");
-    }
-    printf("channel 0 singlePointData is 0x%x ,dataValid is 0x%x\n\r",singlePointData,dataValid );
-    //multiple point mode
+    int i = 0;
+    do{
+    	i++;
+    	WriteReg(hdev,0x41200000 , i);
+    	usleep(1000);
+    	if(i == 8)
+    	{
+    		i=0;
+    	}
+        status =    BISS_C_ReadSinglePoint(hdev,0,&singlePointData,&dataValid);
+        if(status)
+        {
+            print("BISS_C_ReadSinglePoint failed\n\r");
+        }
+        printf("channel 0 singlePointData is 0x%x ,dataValid is 0x%x\n\r",singlePointData,dataValid );
+        //multiple point mode
+    }while(1);
+
 
     cleanup_platform();
     return 0;

@@ -30,9 +30,9 @@ The FPGA project constraints.
 
 We offer a standalone software demo based on Xilinx SDK 2019.1, the source code located in ./IP/BISS_C/drivers_demo
 
-### How can we get the hardware?
+### How can we get the hardware and contact you?
 
-You can contact us with email info@hello-fpga.com , the price will be 3000RMB (include the power and cables), we will sell or open source the hardware later.
+You can contact us by email info@hello-fpga.com , the price will be 3000RMB (including the power and cables), and we will sell or open source the hardware later.
 
 ### What is the sensor you tested?
 

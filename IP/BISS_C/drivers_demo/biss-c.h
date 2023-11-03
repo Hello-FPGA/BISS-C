@@ -14,6 +14,10 @@
 // ********************************************************************************
 int BISS_C_Init(int hdev);
 
+int BISS_C_Start(int hdev);
+
+int BISS_C_Stop(int hdev);
+
 // ********************************************************************************
 /// <summary>
 /// ignore crc check for the data

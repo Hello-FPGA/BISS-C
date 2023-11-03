@@ -50,7 +50,20 @@
 #include "xil_printf.h"
 #include "biss-c.h"
 #include "sleep.h"
+#include "xaxidma.h"
+#include "xparameters.h"
 
+#ifndef DDR_BASE_ADDR
+#warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
+		 DEFAULT SET TO 0x01000000
+#define MEM_BASE_ADDR		0x10000000
+#else
+#define MEM_BASE_ADDR		(DDR_BASE_ADDR + 0x01000000)
+#endif
+
+#define TX_BUFFER_BASE		(MEM_BASE_ADDR + 0x00100000)
+#define RX_BUFFER_BASE		(MEM_BASE_ADDR + 0x00300000)
+#define RX_BUFFER_HIGH		(MEM_BASE_ADDR + 0x004FFFFF)
 
 int main()
 {
@@ -74,9 +87,9 @@ int main()
         print("BISS_C_IgnoreCRC failed\n\r");
     }
 
-    // the main clock is 50Mhz, we can set the ma as 1Mhz ,so the divider will be 50/2
+    // the main clock is 50Mhz, the actual frequency will be 50Mhz/(400*2)
     print("MAClk is 1Mhz\n\r");
-    status =  BISS_C_ConfigMAClk(hdev, 400);
+    status =  BISS_C_ConfigMAClk(hdev, 40);
     if(status)
     {
         print("BISS_C_ConfigMAClk failed\n\r");
@@ -97,27 +110,106 @@ int main()
     }
     print("channel 0 enabled\n\r");
 
+
+    print("channel 0 single point data read\n\r");
     unsigned int singlePointData = 0;
     bool dataValid = false;
     int i = 0;
     do{
     	i++;
-    	WriteReg(hdev,0x41200000 , i);
-    	usleep(1000);
-    	if(i == 8)
-    	{
-    		i=0;
-    	}
+    	WriteReg(hdev,0x41200000 , i%8);//test the led
+    	sleep(1);
         status =    BISS_C_ReadSinglePoint(hdev,0,&singlePointData,&dataValid);
         if(status)
         {
             print("BISS_C_ReadSinglePoint failed\n\r");
         }
-        printf("channel 0 singlePointData is 0x%x ,dataValid is 0x%x\n\r",singlePointData,dataValid );
+        printf("channel 0 singlePointData 0x%x \n\r",singlePointData );
         //multiple point mode
-    }while(1);
+    }while(i<100);
 
 
+    print("BISS_C  multi point data read\n\r");
+
+	BISS_C_Stop(hdev);
+    //axi dma read the multiple points data
+    XAxiDma AxiDma;
+	XAxiDma_Config *CfgPtr;
+	int Tries = 10;//read 10 times
+	int Index;
+	int *RxBufferPtr;
+	int length = 16;
+
+	RxBufferPtr = (int *)RX_BUFFER_BASE;
+
+
+	for(Index = 0; Index < Tries; Index ++) {
+
+		/* Initialize the XAxiDma device.
+			 */
+			CfgPtr = XAxiDma_LookupConfig(XPAR_AXIDMA_0_DEVICE_ID);
+			if (!CfgPtr) {
+				printf("No config found for %d\r\n", XPAR_AXIDMA_0_DEVICE_ID);
+				return XST_FAILURE;
+			}
+
+			status = XAxiDma_CfgInitialize(&AxiDma, CfgPtr);
+			if (status != XST_SUCCESS) {
+				printf("Initialization failed %d\r\n", status);
+				return XST_FAILURE;
+			}
+
+			if(XAxiDma_HasSg(&AxiDma)){
+				printf("Device configured as SG mode \r\n");
+				return XST_FAILURE;
+			}
+
+			/* Disable interrupts, we use polling mode
+			 */
+			XAxiDma_IntrDisable(&AxiDma, XAXIDMA_IRQ_ALL_MASK,
+					XAXIDMA_DEVICE_TO_DMA);
+			XAxiDma_IntrDisable(&AxiDma, XAXIDMA_IRQ_ALL_MASK,
+					XAXIDMA_DMA_TO_DEVICE);
+			int reg_value = 0;
+
+		//read 16 point data
+
+		status = XAxiDma_SimpleTransfer(&AxiDma,(UINTPTR) RxBufferPtr,
+				length, XAXIDMA_DEVICE_TO_DMA);
+
+		if (status) {
+			return XST_FAILURE;
+		}
+
+		//开启数据源
+		//config the s2mm filter
+		WriteReg(hdev, 0x41240008,length/4 -1);//4 byte 数据位宽，设置filter 要过滤的数据长度
+		WriteReg(hdev, 0x41240000,0);//复位
+		WriteReg(hdev, 0x41240000,1);//启动数据筛选
+
+		BISS_C_Start(hdev);//start biss
+
+
+		while (XAxiDma_Busy(&AxiDma,XAXIDMA_DEVICE_TO_DMA)) {
+				/* Wait */
+	    	sleep(1);
+		}
+		/* Invalidate the DestBuffer before receiving the data, in case the
+		 * Data Cache is enabled
+		 */
+	#ifndef __aarch64__
+		Xil_DCacheInvalidateRange((UINTPTR)RxBufferPtr, length);
+	#endif
+
+		for(int i=0; i < length/4; i++)
+		{
+			printf("position data 0x%x \r\n",RxBufferPtr[i]);
+		}
+
+    	sleep(1);
+		printf("finite transfer finished \r\n");
+	    print("BISS_C  multi point data read\n\r");
+	}
     cleanup_platform();
     return 0;
 }

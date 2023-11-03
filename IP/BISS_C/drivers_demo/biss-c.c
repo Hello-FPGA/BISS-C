@@ -30,11 +30,6 @@ int BISS_C_Init(int hdev)
 	{
 		return status;
 	}
-	status = WriteReg(hdev, BISS_SOFT_RESET, 0);
-	if (status)
-	{
-		return status;
-	}
 
 	status = WriteReg(hdev, BISS_IS_SINGLE_POINT_MODE, 0);
 	if (status)
@@ -61,6 +56,27 @@ int BISS_C_Init(int hdev)
 	}
 	status = BISS_C_IgnoreCRC(hdev,0xff);
 	return status;
+}
+
+
+int BISS_C_Start(int hdev)
+{
+	int status = 0;
+	status = WriteReg(hdev, BISS_SOFT_RESET, 0);
+	if (status)
+	{
+		return status;
+	}
+}
+
+int BISS_C_Stop(int hdev)
+{
+	int status = 0;
+	status = WriteReg(hdev, BISS_SOFT_RESET, 1);
+	if (status)
+	{
+		return status;
+	}
 }
 
 int BISS_C_IgnoreCRC(int hdev, int ignoreCRC)
@@ -248,6 +264,8 @@ int BISS_C_ReadSinglePoint(int hdev, int channelIndex, unsigned int* data, bool*
 	{
 		return status;
 	}
+
+	status = BISS_C_Stop(hdev);
 	return status;
 
 }

@@ -24,6 +24,16 @@ Run the build.bat to recreate the VIVADO project, you can change the VIVADO loca
 
 The FPGA project constraints.
 
+
+
+## Hardware
+
+You can contact with us to buy one or make it by yourself, the  design files has already been open sourced and tested.
+
+https://github.com/Hello-FPGA/ZYNQ7020_Core_Board
+
+https://github.com/Hello-FPGA/BISS-C-Board
+
 # QA
 
 ### Where is the software code?
@@ -32,7 +42,7 @@ We offer a standalone software demo based on Xilinx SDK 2019.1, the source code 
 
 ### How can we get the hardware and contact you?
 
-You can contact us by email info@hello-fpga.com , the price will be 3000RMB (including the power and cables), and we will sell or open source the hardware later.
+You can contact us by email info@hello-fpga.com  or QQ 947559581, the price will be 3000RMB (including the power and cables), and we will sell or open source the hardware later.
 
 ### What is the sensor you tested?
 

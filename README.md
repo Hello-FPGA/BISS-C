@@ -2,7 +2,9 @@
 
 This is N channel BISS-C FPGA IP and It's Driver Repo.
 
-we used a ZYNQ7020 Core board and an extension BISS-C board to implement this demo, this is a 8 channel BISS-C sensor grabber demo.
+If it is helpful, please give our repo a star to make more people see it.
+
+we used a ZYNQ7020 Core board and an extension BISS-C board to implement this demo, this is a 8-channel BISS-C sensor grabber demo.
 
 ![image-20231027163109709](README.assets/image-20231027163109709.png)
 

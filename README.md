@@ -2,6 +2,8 @@
 
 This is N channel BISS-C FPGA IP and It's Driver Repo.
 
+https://b23.tv/rWHbC1f 
+
 If it is helpful, please give our repo a star to make more people see it.
 
 we used a ZYNQ7020 Core board and an extension BISS-C board to implement this demo, this is a 8-channel BISS-C sensor grabber demo.
@@ -30,7 +32,7 @@ The FPGA project constraints.
 
 ## Hardware
 
-You can contact with us to buy one or make it by yourself, the  design files has already been open sourced and tested.
+You can contact us to buy one or make it by yourself, the  design files have already been open-sourced and tested.
 
 https://github.com/Hello-FPGA/ZYNQ7020_Core_Board
 
@@ -46,7 +48,10 @@ We offer a standalone software demo based on Xilinx SDK 2019.1, the source code 
 
 You can contact us by email info@hello-fpga.com  or QQ 947559581, the price will be 3000RMB (including the power and cables), and we will sell or open source the hardware later.
 
+
+
+
 ### What is the sensor you tested?
 
-Right now, we only test 2 type sensors, one is RENISHAW L-9709-9005-03-F 32bit, one is a 14bit Chinese local sensor. But we believe that all RENISHAW sensors will works well on this code. And we welcome you give us more feedback if you used our hardware or software.
+Right now, we only test 2 types of sensors, one is RENISHAW L-9709-9005-03-F 32bit, and one is a 14bit Chinese local sensor. But we believe that all RENISHAW sensors will work well on this code. And we welcome you to give us more feedback if you used our hardware or software.
 
